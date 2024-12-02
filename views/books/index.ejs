@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%- include('../partials/head') %>
+    <title><%= title %></title>
+</head>
+<body>
+    <nav class="teal">
+        <div class="nav-wrapper">
+            <a href="/" class="brand-logo center">Books Page</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="center-align" style="margin-top: 40px;">
+            <a href="/" class="btn">Go to Home Page</a>
+        </div>
+    </div>
+    <div class="container">
+        <h1 class="center-align">Book List</h1>
+        <ul class="collection">
+            <% for( let i = 0; i < books.length; i++ ) { %>
+                <li class="collection-item">
+                    <a href=""><strong><%= books[i].title %></strong> by <%= books[i].author %></a>
+                </li>
+                    <% } %>
+        </ul>
+        <div class="center-align">
+            <a href="/books/new" class="btn wave-affect waves-light teal">Add a new book</a>
+        </div>
+    </div>
+</body>
+</html>
