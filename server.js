@@ -4,6 +4,7 @@ const methodOverride = require('method-override');
 const books = require('./data/books');
 const app = express();
 const path = require('path');
+const { isBuffer } = require('util');
 
 // ************
 //  MIDDLEWARE
@@ -65,6 +66,15 @@ app.get('/books/:id', (req, res) => {
     }
 });
 
+app.get('/books/:id/edit', (req, res) => {
+    const book = books.find(book => book.id === parseInt(req.params.id));
+    if (book) {
+        res.render('books/edit', { title: 'Edit Book', book });
+    } else {
+        res.status(404).render('404/notFound', { title: 'Book Not Found!' })
+    }
+})
+
 // EDIT 
 app.put('/books/:id', (req, res) => {
     const bookId = parseInt(req.params.id);
@@ -72,14 +82,24 @@ app.put('/books/:id', (req, res) => {
     if (bookIndex !== -1) {
         books[bookIndex] = {...books[bookIndex], ...req.body};
         //res.json({message: 'Book updated successfuflly', book: books[bookIndex]});
+        res.status(200).redirect('/books')
     } else {
-        res.status(404).json({message: 'Book not found'});
-    }
-})
+        res.status(404).render('404/notFound', {title: 'Book Not Found'});
+    };
+});
 
 
 // DELETE 
-
+app.delete('/books/:id', (req, res) => {
+    const bookId = parseInt(req.params.id);
+    const bookIdx = books.findIndex(book => book.id === bookId);
+    if (bookIdx !== -1) {
+        books.splice(bookIdx, 1);
+    } else {
+        res.status(404).render('404/notFound', { title: 'Book Not Found' });
+    }
+    res.status(200).redirect('/books');
+})
 
 
 
