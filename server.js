@@ -50,7 +50,7 @@ app.post('/books', (req, res) => {
 
     books.push(newBook);
     console.log(books);
-    res.status(200).json({...newBook, message: 'Book created successfully'});
+    res.status(201).redirect('/books');
 })
 
 // SHOW
@@ -59,9 +59,9 @@ app.get('/books/:id', (req, res) => {
         // When passing a variable into a URL, Must convert the string variable into a number.
     const book = books.find(book => book.id === parseInt(req.params.id));
     if (book) {
-        res.json(book);
+        res.render('books/show', {title: 'Book Details', book})
     } else {
-        res.status(404).json({message: 'Book not found' });
+        res.status(404).render('404/notFound', {title: 'Book not found'});
     }
 });
 
@@ -71,7 +71,7 @@ app.put('/books/:id', (req, res) => {
     const bookIndex = books.findIndex(book => book.id === bookId);
     if (bookIndex !== -1) {
         books[bookIndex] = {...books[bookIndex], ...req.body};
-        res.json({message: 'Book updated successfuflly', book: books[bookIndex]});
+        //res.json({message: 'Book updated successfuflly', book: books[bookIndex]});
     } else {
         res.status(404).json({message: 'Book not found'});
     }
