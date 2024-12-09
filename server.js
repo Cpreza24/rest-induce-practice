@@ -5,6 +5,13 @@ const books = require('./data/books');
 const app = express();
 const path = require('path');
 const { isBuffer } = require('util');
+const Book = require('./models/books');
+const mongoose = require('mongoose');
+// ==================
+// CONFIGURE MONGOOSE
+// ==================
+// getting-started.js
+require('./configs/database');
 
 // ************
 //  MIDDLEWARE
@@ -14,7 +21,8 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(methodOverride('_method'));
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/', require('./routes/home'));
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
@@ -22,6 +30,8 @@ app.set('views', './views');
 
 
 // ROUTES (I.N.D.U.C.E.S) Follow this method when making routes!!
+//seed route
+app.use('/', require('./routes/seed'))
 
 // INDEX (Root Route)
 app.get('/', (req, res) => {
