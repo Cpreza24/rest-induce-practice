@@ -1,90 +1,107 @@
 //const books = require('../data/books');
-const Book = require('../models/books');
-const book = require('../models/books');
-
+const Book = require("../models/books");
+const book = require("../models/books");
 
 async function index(req, res) {
     try {
-        const books = await book.find({})
-        res.render('books', {title: 'Book List', books})
+        const books = await book.find({});
+        res.render("books", { title: "Book List", books });
     } catch (error) {
         console.error(error.message);
-        res.status(500).send('Internal server error')
+        res.status(500).send("Internal server error");
     }
     // res.render('books', { title: "Book List", books })
 }
 
-
 function newBook(req, res) {
-    res.render('books/new', { title: 'New Book' })
+    res.render("books/new", { title: "New Book" });
 }
 
 async function postBook(req, res) {
     try {
-        const {title = 'new book', author = 'New Author'} = req.body;
-        const newBook = new Book( {
+        const { title = "new book", author = "New Author" } = req.body;
+        const newBook = new Book({
             title: title,
-            author: author
+            author: author,
         });
         await newBook.save();
-        res.status(201).redirect('/books')
+        res.status(201).redirect("/books");
     } catch (error) {
         console.error(error.message);
-        res.status(500).send('internal server error');
+        res.status(500).send("internal server error");
     }
 }
 
 async function showBook(req, res) {
     try {
         const book = await Book.findById(req.params.id);
-    if (book) {
-        res.render('books/show', { title: 'Book Details', book })
-    } else {
-        res.status(404).render('404/notFound', { title: "Book not found" })
-    }
+        if (book) {
+            res.render("books/show", { title: "Book Details", book });
+        } else {
+            res.status(404).render("404/notFound", { title: "Book not found" });
+        }
     } catch (error) {
         console.error(error.message);
-        res.status(500).send('Internal server error')
-    }
-    
-}
-
-
-function editBook(req, res) {
-    const book = books.find(book => book.id === parseInt(req.params.id));
-    if (book) {
-        res.render('books/edit', { title: 'Edit Book', book });
-    } else {
-        res.status(404).render('404/notFound', { title: 'Book Not Found!' })
+        res.status(500).send("Internal server error");
     }
 }
 
-function updateBook(req, res) {
-    const bookId = parseInt(req.params.id);
-    const bookIndex = books.findIndex(book => book.id === bookId);
-    if (bookIndex !== -1) {
-        books[bookIndex] = { ...books[bookIndex], ...req.body };
-        res.status(200).redirect(`/books`);
-        // res.render('bookUpdated', { title: 'Book Updated', book: books[bookIndex] });
-    } else {
-        res.status(404).render('404/notFound', { title: 'Book Not Found' });
+async function editBook(req, res) {
+    try {
+        const book = await Book.findById(req.params.id);
+        if (book) {
+            res.render("books/edit", { title: "Edit Book", book });
+        } else {
+            res.status(404).render("404/notFound", {
+                title: "Book Not Found!",
+            });
+        }
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
     }
 }
 
-function deleteBook(req, res) {
-    const bookId = parseInt(req.params.id);
-    const bookIndex = books.findIndex(book => book.id === bookId);
-    if (bookIndex !== -1) {
-        books.splice(bookIndex, 1);
-    } else {
-        res.status(404).render('404/notFound', { title: 'Book Not Found' });
+async function updateBook(req, res) {
+    try {
+        const { id } = req.params;
+        const updatedBook = await Book.findByIdAndUpdate(id, req.body);
+
+        if (updatedBook) {
+            res.status(200).redirect("/books");
+        } else {
+            res.status(404).render("Book not found");
+        }
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal server error");
     }
-    res.redirect('/books');
 }
 
-module.exports = { index, newBook, postBook, editBook, updateBook, showBook, deleteBook }
+async function deleteBook(req, res) {
+    try {
+        const { id } = req.params;
+        const deletedBook = await Book.findByIdAndDelete(id);
+        if (deletedBook) {
+            res.status(200).redirect("/books");
+        } else {
+            res.status(404).render("404/notFound", { title: "Book Not Found" });
+        }
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).render("Internal server error");
+    }
+}
 
-
+module.exports = {
+    index,
+    newBook,
+    postBook,
+    editBook,
+    updateBook,
+    showBook,
+    deleteBook,
+};
 
 // ROUTES (I.N.D.U.C.E.S) Follow this method when making routes!!
 // INDEX
@@ -92,13 +109,11 @@ module.exports = { index, newBook, postBook, editBook, updateBook, showBook, del
 //     res.render('books', {title: 'Book List', books});
 // });
 
-
 // NEW
 // app.get('/books/new', (req, res) => {
 //     //res.json({message: 'Form with an empty form to submit the new book'});
 //     res.render('books/new', { title: 'New Book' })
 // });
-
 
 // CREATE
 // app.post('/books', (req, res) => {
@@ -134,7 +149,7 @@ module.exports = { index, newBook, postBook, editBook, updateBook, showBook, del
 //     }
 // })
 
-// // EDIT 
+// // EDIT
 // app.put('/books/:id', (req, res) => {
 //     const bookId = parseInt(req.params.id);
 //     const bookIndex = books.findIndex(book => book.id === bookId);
@@ -147,8 +162,7 @@ module.exports = { index, newBook, postBook, editBook, updateBook, showBook, del
 //     };
 // });
 
-
-// // DELETE 
+// // DELETE
 // app.delete('/books/:id', (req, res) => {
 //     const bookId = parseInt(req.params.id);
 //     const bookIdx = books.findIndex(book => book.id === bookId);
