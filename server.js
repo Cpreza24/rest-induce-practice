@@ -5,6 +5,7 @@ const methodOverride = require('method-override');
 const app = express();
 const path = require('path');
 const authController = require('./controllers/auth.js');
+const session = require('express-session');
 
 // ==================
 // CONFIGURE MONGOOSE
@@ -20,6 +21,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(methodOverride('_method'));
 app.use('/auth', authController);
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: true,
+    })
+);
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
